@@ -21,22 +21,24 @@ This Node-RED project demonstrates a simple image verification pipeline using MQ
 
 ## Repository Contents
 - `flows.json` → Node-RED flow file.
-- `images/` → Sample registration and booth images.
+- `1.PNG` → Example Registration image.
+- `detection.PNG` → Example Node-RED flow screenshot.
+- `iugien 4.PNG` → Example Booth image.
 - `README.md` → Project documentation.
 
 ## Example Flow and Dashboard
 
 ### Node-RED Flow
-![Flow Screenshot](images/flow.png)
+![Flow Screenshot](detection.PNG)
 
 ### Registration Image
-![Registration Example](images/reg_sample.jpg)
+![Registration Example](1.PNG)
 
 ### Booth Image
-![Booth Example](images/booth_sample.jpg)
+![Booth Example](iugien%204.PNG)
 
 ### Dashboard Result
-![Dashboard Result](images/dashboard_result.png)
+![Dashboard Result](nbfs.PNG)
 
 ## Future Enhancements
 - Replace exact buffer comparison with AI/Face recognition.

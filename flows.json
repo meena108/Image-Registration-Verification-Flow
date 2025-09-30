@@ -1,0 +1,107 @@
+[
+    {
+        "id": "2abe3286fa304813",
+        "type": "group",
+        "z": "04dc248a5d44c412",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "fn_cache_reg",
+            "fn_compare_exact",
+            "ui_result_exact",
+            "7abc2638ededa5c5"
+        ],
+        "x": 1234,
+        "y": 519,
+        "w": 912,
+        "h": 162
+    },
+    {
+        "id": "fn_cache_reg",
+        "type": "function",
+        "z": "04dc248a5d44c412",
+        "g": "2abe3286fa304813",
+        "name": "REG: cache buffer for user",
+        "func": "// msg.topic like Registration/user001\n// msg.payload is a Buffer from Download REG image\nconst user = (msg.topic || 'Registration/unknown').split('/')[1] || 'unknown';\nflow.set(`regBuf_${user}`, msg.payload);        // store binary buffer\nflow.set(`regPath_${user}`, msg.filename);      // remember saved path\nnode.status({fill:'green', shape:'dot', text:`REG cached: ${user}`});\nreturn null; // nothing to UI",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 1640,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "fn_compare_exact",
+        "type": "function",
+        "z": "04dc248a5d44c412",
+        "g": "2abe3286fa304813",
+        "name": "BOOTH: compare with REG (exact)",
+        "func": "// msg.topic like Booth/user001\n// msg.payload is a Buffer from Download BOOTH image\nconst user = (msg.topic || 'Booth/unknown').split('/')[1] || 'unknown';\nconst regBuf = flow.get(`regBuf_${user}`);\nlet result = { user };\nif (!regBuf) {\n    result.status = 'NO REGISTRATION';\n} else {\n    const boothBuf = msg.payload;\n    // exact byte-for-byte compare\n    const match = Buffer.compare(regBuf, boothBuf) === 0;\n    result.status = match ? 'MATCH' : 'NO MATCH';\n    // for transparency, include sizes\n    result.regSize = regBuf.length;\n    result.boothSize = boothBuf.length;\n}\nmsg.result = result;\nreturn msg; // pass to RESULT UI",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1820,
+        "y": 560,
+        "wires": [
+            [
+                "ui_result_exact"
+            ]
+        ]
+    },
+    {
+        "id": "ui_result_exact",
+        "type": "ui_template",
+        "z": "04dc248a5d44c412",
+        "g": "2abe3286fa304813",
+        "group": "grp_result",
+        "name": "RESULT",
+        "order": 1,
+        "width": 12,
+        "height": 2,
+        "format": "<div style=\"font-size:18px\">\n  <b>User:</b> {{msg.result.user}} &nbsp;|&nbsp;\n  <b>Status:</b>\n  <span ng-style=\"{'color': (msg.result.status==='MATCH') ? 'green' : (msg.result.status==='NO REGISTRATION' ? '#999' : 'red') }\">\n    {{msg.result.status}}\n  </span>\n  <span ng-if=\"msg.result.regSize\">&nbsp;|&nbsp;<b>REG bytes:</b> {{msg.result.regSize}}</span>\n  <span ng-if=\"msg.result.boothSize\">&nbsp;|&nbsp;<b>BOOTH bytes:</b> {{msg.result.boothSize}}</span>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": false,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 2060,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7abc2638ededa5c5",
+        "type": "comment",
+        "z": "04dc248a5d44c412",
+        "g": "2abe3286fa304813",
+        "name": "Exact Match",
+        "info": "",
+        "x": 1330,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "grp_result",
+        "type": "ui_group",
+        "name": "RESULT",
+        "tab": "tab_photo_viewer",
+        "order": 3,
+        "disp": true,
+        "width": 12,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "tab_photo_viewer",
+        "type": "ui_tab",
+        "name": "Photo Viewer",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
